@@ -1,10 +1,13 @@
 package main
 
 import (
+	"coffee-app/coffee-server/db"
+	"coffee-app/coffee-server/router"
+	"coffee-app/coffee-server/services"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"log"
-	"net/http"
 	"os"
 )
 
@@ -14,6 +17,7 @@ type Config struct {
 
 type Application struct {
 	Config Config
+	Models services.Models
 }
 
 func (app *Application) Serve() error {
@@ -21,13 +25,14 @@ func (app *Application) Serve() error {
 	if err != nil {
 		log.Fatal("Error leading .env file")
 	}
-	port := os.Getenv("PORT")
+	port := app.Config.Port
 	fmt.Println("API is listening on port", port)
 
-	srv := &http.Server{
-		Addr: fmt.Sprintf(":%s", port),
-	}
-	return srv.ListenAndServe()
+	// Fiber uygulamasını oluştur
+	fiberAPP := fiber.New()
+	router.Routes(fiberAPP)
+
+	return fiberAPP.Listen(fmt.Sprintf(":%s", port))
 }
 
 func main() {
@@ -40,8 +45,17 @@ func main() {
 		Port: os.Getenv("PORT"),
 	}
 
+	dsn := os.Getenv("DSN")
+	dbConn, err := db.ConnectPostgres(dsn)
+	if err != nil {
+		log.Fatal("Cannot connect to database")
+	}
+
+	defer dbConn.DB.Close()
+
 	app := &Application{
 		Config: cfg,
+		Models: services.New(dbConn.DB),
 	}
 
 	err = app.Serve()
