@@ -42,7 +42,7 @@ class AuthCheck extends StatelessWidget {
       future: _checkAuth(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+           return Center(child: CircularProgressIndicator());
         } else {
           if (snapshot.hasData && snapshot.data == true) {
             return HomeScreen();
@@ -53,7 +53,6 @@ class AuthCheck extends StatelessWidget {
       },
     );
   }
-
   Future<bool> _checkAuth() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
