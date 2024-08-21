@@ -3,24 +3,34 @@ import '../services/api.dart';
 import '../types/field.dart';
 
 class ExploreScreen extends StatefulWidget {
+  final VoidCallback onPageSelected;
+
+  const ExploreScreen({Key? key, required this.onPageSelected}) : super(key: key);
+
   @override
-  _ExploreScreenState createState() => _ExploreScreenState();
+  ExploreScreenState createState() => ExploreScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen> {
+class ExploreScreenState extends State<ExploreScreen> {
   late Future<List<Field>> _fieldsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fieldsFuture = fetchFields(); // API'den alanları al
+    loadFields(); // API'den alanları al
+  }
+
+  void loadFields() {
+    setState(() {
+      _fieldsFuture = fetchFields(); // API'den alanları al
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Sahalar')
+        title: Text('Sahalar'),
       ),
       body: FutureBuilder<List<Field>>(
         future: _fieldsFuture,

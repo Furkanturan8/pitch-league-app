@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
-
 import '../services/api.dart';
 import '../types/user.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final VoidCallback onPageSelected;
+
+  const ProfileScreen({Key? key, required this.onPageSelected}) : super(key: key);
+
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   late Future<User> _userFuture;
 
   @override
   void initState() {
     super.initState();
-    _userFuture = fetchUserMe(); // API'den kullanıcıyı al
+    loadUser(); // Kullanıcı verilerini yükle
   }
 
-  @override
+  void loadUser() {
+    setState(() {
+      _userFuture = fetchUserMe(); // API'den kullanıcıyı al
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

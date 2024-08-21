@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+
+class CustomMenuBar extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
+
+  const CustomMenuBar({
+    Key? key,
+    required this.selectedIndex,
+    required this.onItemTapped,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.travel_explore),
+          label: 'Keşfet',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.group),
+          label: 'Takımlar',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.sports_soccer_rounded),
+          label: 'Ligler',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_box_sharp),
+          label: 'Profil',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.menu),
+          label: 'Menu',
+        ),
+      ],
+      currentIndex: selectedIndex,
+      onTap: onItemTapped,
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.grey,
+      backgroundColor: Colors.black,
+      showUnselectedLabels: true,
+      showSelectedLabels: true,
+    );
+  }
+}

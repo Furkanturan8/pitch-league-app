@@ -1,12 +1,14 @@
 class Team {
   final int id;
   final String name;
+  final int capacity;
   final int captainId;
   final Captain captain;
 
   Team({
     required this.id,
     required this.name,
+    required this.capacity,
     required this.captainId,
     required this.captain,
   });
@@ -15,6 +17,7 @@ class Team {
     return Team(
       id: json['ID'],
       name: json['Name'],
+      capacity: json['Capacity'] , // Varsayılan değer 0 olarak ayarlandı
       captainId: json['CaptainID'],
       captain: Captain.fromJson(json['Captain']),
     );
@@ -22,30 +25,24 @@ class Team {
 }
 
 class Captain {
-  final String name;
-  final String surname;
-  final String username;
-  final String email;
-  final String phone;
-  final int role;
+  final String Name;
+  final String Surname;
+  final String Username;
+  final String Phone;
 
   Captain({
-    required this.name,
-    required this.surname,
-    required this.username,
-    required this.email,
-    required this.phone,
-    required this.role,
+    required this.Name,
+    required this.Surname,
+    required this.Username,
+    required this.Phone
   });
 
   factory Captain.fromJson(Map<String, dynamic> json) {
     return Captain(
-      name: json['name'],
-      surname: json['surname'],
-      username: json['username'],
-      email: json['email'],
-      phone: json['phone'],
-      role: json['role'],
+      Name: json['name'],
+      Surname: json['surname'],
+      Username: json['username'],
+      Phone: json['phone'],
     );
   }
 }

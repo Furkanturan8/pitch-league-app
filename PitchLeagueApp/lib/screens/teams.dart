@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
-
 import '../services/api.dart';
 import '../types/team.dart';
+import 'team_detail.dart'; // Yeni ekranın import edilmesi
 
 class TeamsScreen extends StatefulWidget {
+  final VoidCallback onPageSelected;
+
+  const TeamsScreen({Key? key, required this.onPageSelected}) : super(key: key);
+
   @override
-  _TeamsScreenState createState() => _TeamsScreenState();
+  TeamsScreenState createState() => TeamsScreenState();
 }
 
-class _TeamsScreenState extends State<TeamsScreen> {
+class TeamsScreenState extends State<TeamsScreen> {
   late Future<List<Team>> _teamsFuture;
 
   @override
   void initState() {
     super.initState();
-    _teamsFuture = fetchTeams(); // API'den takımları al
+    loadTeams(); // API'den takımları al
+  }
+
+  void loadTeams() {
+    setState(() {
+      _teamsFuture = fetchTeams(); // API'den veriyi yeniden al
+    });
   }
 
   @override
@@ -39,9 +49,30 @@ class _TeamsScreenState extends State<TeamsScreen> {
               itemCount: teams.length,
               itemBuilder: (context, index) {
                 final team = teams[index];
-                return ListTile(
-                  title: Text(team.name),
-                  subtitle: Text('Takım Kaptanı: ${team.captain.name} ${team.captain.surname}'),
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(16),
+                    title: Text(
+                      team.name,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'Takım Kaptanı: ${team.captain.Name} ${team.captain.Surname} \nBoş adam kapasitesi: ${team.capacity}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TeamDetailScreen(teamId: team.id),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             );

@@ -25,11 +25,11 @@ class MyApp extends StatelessWidget {
         '/': (context) => AuthCheck(),
         '/home': (context) => HomeScreen(),
         '/login': (context) => LoginScreen(),
-        '/explore': (context) => ExploreScreen(),
-        '/teams': (context) => TeamsScreen(),
-        '/leagues': (context) => LeaguesScreen(),
+        '/explore': (context) => ExploreScreen(onPageSelected: () {}),
+        '/teams': (context) => TeamsScreen(onPageSelected: () {}),
+        '/leagues': (context) => LeaguesScreen(onPageSelected: () {}),
         '/menu': (context) => MenuScreen(),
-        '/profile': (context) => ProfileScreen(),
+        '/profile': (context) => ProfileScreen(onPageSelected: () {}),
       },
     );
   }
