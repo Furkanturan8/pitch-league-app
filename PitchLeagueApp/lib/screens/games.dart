@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api.dart';
 import '../types/games.dart';
+import '../types/user.dart';
 
 class GamesScreen extends StatefulWidget {
   final VoidCallback? onPageSelected;
@@ -13,17 +14,39 @@ class GamesScreen extends StatefulWidget {
 
 class GamesScreenState extends State<GamesScreen> {
   late Future<List<Games>> _gamesFuture;
+  int? _userID; // Kullanıcı ID'sini saklayacak değişken
 
   @override
   void initState() {
     super.initState();
-    loadGames(); // API'den alanları al
+    _gamesFuture = Future.value([]); // Başlangıçta boş bir liste döndür
+    loadUser(); // Kullanıcı ID'sini al
+  }
+
+  Future<void> loadUser() async {
+    try {
+      final userID = await getMyUserID(); // API'den kullanıcıyı al
+
+      if (!mounted) return; // Eğer widget artık ağacın bir parçası değilse çık
+      setState(() {
+        _userID = userID;
+        loadGames(); // Kullanıcı ID'si alındıktan sonra oyunları yükle
+      });
+    } catch (e) {
+      print('Kullanıcı yüklenemedi: $e');
+    }
   }
 
   void loadGames() {
-    setState(() {
-      _gamesFuture = fetchGames(); // API'den alanları al
-    });
+    if (_userID != null) {
+      setState(() {
+        _gamesFuture = fetchGames(_userID!); // Kullanıcı ID'si mevcutsa oyunları yükle
+      });
+    } else {
+      setState(() {
+        _gamesFuture = Future.value([]); // Kullanıcı ID'si yoksa boş liste döndür
+      });
+    }
   }
 
   @override
@@ -42,7 +65,7 @@ class GamesScreenState extends State<GamesScreen> {
           } else if (snapshot.hasData) {
             final games = snapshot.data!;
             if (games.isEmpty) {
-              return Center(child: Text('Maçlar bulunamadı'));
+              return Center(child: Text('Henüz maçınız yok'));
             }
             return ListView.builder(
               itemCount: games.length,
@@ -269,5 +292,10 @@ class GamesScreenState extends State<GamesScreen> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

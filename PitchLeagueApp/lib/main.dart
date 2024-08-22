@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pitch_league/screens/games.dart';
+import 'package:pitch_league/screens/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
@@ -25,7 +26,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => AuthCheck(),
         '/home': (context) => HomeScreen(),
-        '/login': (context) => LoginScreen(),
         '/explore': (context) => ExploreScreen(onPageSelected: () {}),
         '/teams': (context) => TeamsScreen(onPageSelected: () {}),
         '/leagues': (context) => LeaguesScreen(onPageSelected: () {}),

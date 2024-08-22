@@ -8,6 +8,29 @@ import '../types/team.dart';
 import '../types/user.dart';
 import '../types/field.dart';
 
+Future<void> registerUser(CreateUser createUser) async {
+  final response = await http.post(
+    Uri.parse('http://localhost:3002/api/user/create'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode({
+        'email': createUser.email,
+        'phone': createUser.phone,
+        'name': createUser.name,
+        'surname': createUser.surname,
+        'username': createUser.username,
+        'password': createUser.password,
+    }),
+  );
+
+  if (response.statusCode == 201 || response.statusCode == 200) {
+    print('Kullanıcı başarıyla eklendi');
+  } else {
+    throw Exception('Kullanıcı eklenemedi: ${response.body}');
+  }
+}
+
 Future<void> updateProfile(User user) async {
   final url = Uri.parse('http://localhost:3002/api/user/me');
   final token = await _getToken(); // Token'ı al
@@ -36,10 +59,10 @@ Future<void> updateProfile(User user) async {
   }
 }
 
-Future<List<Games>> fetchGames() async {
+Future<List<Games>> fetchGames(int userID) async {
   final token = await _getToken(); // Token'ı al
   final response = await http.get(
-    Uri.parse('http://localhost:3002/api/gameParts'),
+    Uri.parse('http://localhost:3002/api/gameParts/$userID'),
     headers: {
       'Authorization': 'Bearer $token',
       'Accept': 'application/json',
@@ -56,8 +79,10 @@ Future<List<Games>> fetchGames() async {
     } else {
       throw Exception('Games data is not a list or key is missing');
     }
+  } else if (response.statusCode == 404) {
+    return [];
   } else {
-    throw Exception('Failed to load Games');
+    throw Exception('Error fetching games: ${response.statusCode}');
   }
 }
 
@@ -106,6 +131,37 @@ Future<LeagueTeamDetail> fetchTeamDetail(int id) async {
     }
   } else {
     throw Exception('Failed to load team detail');
+  }
+}
+
+Future<int> getMyUserID() async {
+  final token = await _getToken(); // Token'ı al
+  final response = await http.get(
+    Uri.parse('http://localhost:3002/api/user/me'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+
+    // 'data' anahtarının veriyi bir nesne olarak içerdiğini kontrol et
+    if (jsonMap.containsKey('data') && jsonMap['data'] is Map<String, dynamic>) {
+      final userData = jsonMap['data'] as Map<String, dynamic>;
+
+      // Kullanıcı ID'sini döndür
+      if (userData.containsKey('id') && userData['id'] is int) {
+        return userData['id'] as int;
+      } else {
+        throw Exception('User ID is missing or not an integer');
+      }
+    } else {
+      throw Exception('User data is not a valid JSON object or key is missing');
+    }
+  } else {
+    throw Exception('Failed to load user');
   }
 }
 
@@ -188,7 +244,7 @@ Future<List<League>> fetchLeagues() async {
 Future<List<Map<String, dynamic>>> fetchLeagueTeamDetails(int leagueId) async {
   final token = await _getToken(); // Token'ı al
   final response = await http.get(
-    Uri.parse('http://localhost:3002/api/leaguesTeams/1'),
+    Uri.parse('http://localhost:3002/api/leaguesTeams/$leagueId'),
     headers: {
       'Authorization': 'Bearer $token',
       'Accept': 'application/json',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pitch_league/screens/register.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }),
     );
 
-    print('Response body: ${response.body}');
+    // print('Response body: ${response.body}'); test için kullandım
 
     if (response.statusCode == 200) {
       try {
@@ -66,6 +67,22 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _navigateToRegister() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RegisterScreen(),
+      ),
+    ).then((value) {
+      if (value == true) {
+        // Kullanıcı başarılı bir şekilde kaydolduysa login ekranına geri dön
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Başarıyla kaydolundu! Lütfen giriş yapın.')),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,6 +104,17 @@ class _LoginScreenState extends State<LoginScreen> {
             ElevatedButton(
               onPressed: _login,
               child: Text('Giriş Yap'),
+            ),
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: _navigateToRegister,
+              child: Text(
+                'Hesabınız yoksa kaydolun',
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ],
         ),
