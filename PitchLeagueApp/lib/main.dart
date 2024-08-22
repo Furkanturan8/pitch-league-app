@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pitch_league/screens/games.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
@@ -9,7 +10,7 @@ import 'screens/teams.dart';
 import 'screens/profile.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MyApp());  // TODO : maç detaylarında hangi takıma karşı oynandığı yazılacak!
 }
 
 class MyApp extends StatelessWidget {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/explore': (context) => ExploreScreen(onPageSelected: () {}),
         '/teams': (context) => TeamsScreen(onPageSelected: () {}),
         '/leagues': (context) => LeaguesScreen(onPageSelected: () {}),
+        '/games':(context) => GamesScreen(onPageSelected: () {}),
         '/menu': (context) => MenuScreen(),
         '/profile': (context) => ProfileScreen(onPageSelected: () {}),
       },

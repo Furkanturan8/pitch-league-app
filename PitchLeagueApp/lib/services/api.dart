@@ -1,12 +1,37 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:pitch_league/screens/team_detail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../types/games.dart';
 import '../types/league.dart';
 import '../types/league_team_detail.dart';
 import '../types/team.dart';
 import '../types/user.dart';
 import '../types/field.dart';
+
+Future<List<Games>> fetchGames() async {
+  final token = await _getToken(); // Token'ı al
+  final response = await http.get(
+    Uri.parse('http://localhost:3002/api/gameParts'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> jsonMap = jsonDecode(response.body);
+
+    // 'data' anahtarının veriyi bir liste olarak içerip içermediğini kontrol et
+    if (jsonMap.containsKey('data') && jsonMap['data'] is List) {
+      List<dynamic> jsonList = jsonMap['data'];
+      return jsonList.map((json) => Games.fromJson(json)).toList();
+    } else {
+      throw Exception('Games data is not a list or key is missing');
+    }
+  } else {
+    throw Exception('Failed to load Games');
+  }
+}
 
 Future<List<Team>> fetchTeams() async {
   final token = await _getToken(); // Token'ı al

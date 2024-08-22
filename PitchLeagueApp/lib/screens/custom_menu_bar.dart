@@ -23,16 +23,12 @@ class CustomMenuBar extends StatelessWidget {
           label: 'Takımlar',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.sports_soccer_rounded),
+          icon: Icon(Icons.sports),
           label: 'Ligler',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.account_box_sharp),
-          label: 'Profil',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.menu),
-          label: 'Menu',
+          icon: Icon(Icons.sports_soccer),
+          label: 'Maçlarım',
         ),
       ],
       currentIndex: selectedIndex,
