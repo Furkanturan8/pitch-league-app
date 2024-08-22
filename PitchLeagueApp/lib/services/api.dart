@@ -8,6 +8,34 @@ import '../types/team.dart';
 import '../types/user.dart';
 import '../types/field.dart';
 
+Future<void> updateProfile(User user) async {
+  final url = Uri.parse('http://localhost:3002/api/user/me');
+  final token = await _getToken(); // Token'ı al
+  final response = await http.put(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token', // Gerekirse kullanıcı token'ı burada ekleyin
+    },
+    body: jsonEncode({
+      'email': user.email,
+      'phone': user.phone,
+      'name': user.name,
+      'surname': user.surname,
+      'username': user.username,
+      'role': user.role,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Başarılı güncelleme
+    print('Profil başarıyla güncellendi');
+  } else {
+    // Hata durumları
+    throw Exception('Profil güncellenemedi: ${response.body}');
+  }
+}
+
 Future<List<Games>> fetchGames() async {
   final token = await _getToken(); // Token'ı al
   final response = await http.get(

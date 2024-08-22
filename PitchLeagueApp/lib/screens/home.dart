@@ -5,6 +5,7 @@ import 'package:pitch_league/screens/custom_menu_bar.dart';
 import 'package:pitch_league/screens/explore.dart';
 import 'package:pitch_league/screens/leagues.dart';
 import 'package:pitch_league/screens/menu.dart';
+import 'package:pitch_league/screens/update_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'games.dart';
@@ -86,7 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Profilimi Güncelle'),
               onTap: () {
                 Navigator.pop(context);
-                _onItemTapped(3); // Profil sayfasına yönlendirir
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UpdateProfileScreen(onPageSelected: () {})), // Profil sayfasına yönlendirir
+                );
               },
             ),
             ListTile(
