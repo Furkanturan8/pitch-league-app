@@ -236,7 +236,7 @@ class GamesScreenState extends State<GamesScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${data.game.host.name} ${data.game.host.surname}',
+                                text: '${data.team.captain.name} ${data.team.captain.surname}',
                                 style: TextStyle(fontSize: 15, color: Colors.black),
                               ),
                             ],
@@ -255,7 +255,7 @@ class GamesScreenState extends State<GamesScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: data.game.host.phone,
+                                text: data.team.captain.phone,
                                 style: TextStyle(fontSize: 15, color: Colors.black),
                               ),
                             ],

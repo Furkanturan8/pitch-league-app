@@ -30,6 +30,10 @@ class CustomMenuBar extends StatelessWidget {
           icon: Icon(Icons.sports_soccer),
           label: 'Maçlarım',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.groups),
+          label: 'Takımım',
+        ),
       ],
       currentIndex: selectedIndex,
       onTap: onItemTapped,

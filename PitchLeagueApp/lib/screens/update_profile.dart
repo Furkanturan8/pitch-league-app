@@ -14,6 +14,7 @@ class UpdateProfileScreen extends StatefulWidget {
 
 class UpdateProfileScreenState extends State<UpdateProfileScreen> {
   late Future<User> _userFuture;
+  late User _user; // Burada kullanıcıyı saklayacak değişken
 
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -210,6 +211,7 @@ class UpdateProfileScreenState extends State<UpdateProfileScreen> {
         surname: _surnameController.text.trim(),
         username: _usernameController.text.trim(),
         role: '',
+        teamID: _user.teamID, // Eski teamID'yi koruyun
       );
 
       try {

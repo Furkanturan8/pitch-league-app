@@ -4,7 +4,7 @@ import 'package:pitch_league/screens/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
-import 'screens/menu.dart';
+import 'screens/my_team.dart';
 import 'screens/explore.dart';
 import 'screens/leagues.dart';
 import 'screens/teams.dart';
@@ -26,11 +26,12 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => AuthCheck(),
         '/home': (context) => HomeScreen(),
+        '/login': (context) => LoginScreen(),
         '/explore': (context) => ExploreScreen(onPageSelected: () {}),
         '/teams': (context) => TeamsScreen(onPageSelected: () {}),
         '/leagues': (context) => LeaguesScreen(onPageSelected: () {}),
         '/games':(context) => GamesScreen(onPageSelected: () {}),
-        '/menu': (context) => MenuScreen(),
+        '/myteam': (context) => MyTeamScreen(onPageSelected: () {}),
         '/profile': (context) => ProfileScreen(onPageSelected: () {}),
       },
     );

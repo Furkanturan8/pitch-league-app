@@ -5,6 +5,7 @@ class User {
   final String email;
   final String phone;
   final String role;
+  final int teamID;
 
   User({
     required this.name,
@@ -13,8 +14,22 @@ class User {
     required this.email,
     required this.phone,
     required this.role,
+    required this.teamID,
   });
 
+// Profil güncelleme işlemlerinde teamID'yi hariç tutarak güncellenmiş bir User oluştur
+  Map<String, dynamic> toUpdateJson() {
+    return {
+      'name': name,
+      'surname': surname,
+      'username': username,
+      'email': email,
+      'phone': phone,
+      'role': role,
+    };
+  }
+
+  // Kullanıcı bilgilerini almak için kullanılır
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       name: json['name'],
@@ -23,6 +38,7 @@ class User {
       email: json['email'],
       phone: json['phone'],
       role: json['role'],
+      teamID: json['team_id'],
     );
   }
 }

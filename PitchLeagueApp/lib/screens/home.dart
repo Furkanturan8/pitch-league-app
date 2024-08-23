@@ -4,7 +4,7 @@ import 'package:pitch_league/screens/teams.dart';
 import 'package:pitch_league/screens/custom_menu_bar.dart';
 import 'package:pitch_league/screens/explore.dart';
 import 'package:pitch_league/screens/leagues.dart';
-import 'package:pitch_league/screens/menu.dart';
+import 'package:pitch_league/screens/my_team.dart';
 import 'package:pitch_league/screens/update_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,6 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         (context.findAncestorStateOfType<GamesScreenState>())?.loadGames();
         break;
+      case 4:
+        (context.findAncestorStateOfType<MyTeamScreenState>())?.loadMyTeam();
+
     }
   }
 
@@ -111,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
           TeamsScreen(onPageSelected: () => _loadPage(1)),
           LeaguesScreen(onPageSelected: () => _loadPage(2)),
           GamesScreen(onPageSelected: () => _loadPage(3)),
+          MyTeamScreen(onPageSelected: () => _loadPage(4))
         ],
       ),
       bottomNavigationBar: CustomMenuBar(

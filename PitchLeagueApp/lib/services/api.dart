@@ -40,14 +40,7 @@ Future<void> updateProfile(User user) async {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token', // Gerekirse kullanıcı token'ı burada ekleyin
     },
-    body: jsonEncode({
-      'email': user.email,
-      'phone': user.phone,
-      'name': user.name,
-      'surname': user.surname,
-      'username': user.username,
-      'role': user.role,
-    }),
+    body: jsonEncode(user.toUpdateJson()),
   );
 
   if (response.statusCode == 200) {
@@ -73,9 +66,10 @@ Future<List<Games>> fetchGames(int userID) async {
     Map<String, dynamic> jsonMap = jsonDecode(response.body);
 
     // 'data' anahtarının veriyi bir liste olarak içerip içermediğini kontrol et
-    if (jsonMap.containsKey('data') && jsonMap['data'] is List) {
-      List<dynamic> jsonList = jsonMap['data'];
-      return jsonList.map((json) => Games.fromJson(json)).toList();
+    if (jsonMap.containsKey('data') && jsonMap['data'] is Map<String, dynamic>) {
+      Map<String, dynamic> dataMap = jsonMap['data'];
+      // Eğer 'data' tek bir oyun nesnesiyse, bunu bir listeye ekleyin
+      return [Games.fromJson(dataMap)];
     } else {
       throw Exception('Games data is not a list or key is missing');
     }
@@ -108,6 +102,61 @@ Future<List<Team>> fetchTeams() async {
     }
   } else {
     throw Exception('Failed to load teams');
+  }
+}
+
+Future<bool> addUserToTeam(int userId, int teamId) async {
+  final token = await _getToken(); // Token'ı al
+  final String apiUrl = 'http://localhost:3002/api/teams/$teamId/join/$userId';
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, int>{
+        'userID': userId,
+        'teamID': teamId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true; // Başarı durumunda true döndür
+    } else {
+      print('Failed to add user to team. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      return false; // Başarısızlık durumunda false döndür
+    }
+  } catch (e) {
+    print('Error: $e');
+    return false; // Hata durumunda false döndür
+  }
+}
+
+Future<List<Team>> fetchMyTeam(int teamID) async {
+  final token = await _getToken(); // Token'ı al
+  final response = await http.get(
+    Uri.parse('http://localhost:3002/api/teams/$teamID'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> jsonMap = jsonDecode(response.body);
+
+    if (jsonMap.containsKey('data') && jsonMap['data'] is Map<String, dynamic>) {
+      Map<String, dynamic> dataMap = jsonMap['data'];
+      // Eğer 'data' tek bir oyun nesnesiyse, bunu bir listeye ekleyin
+      return [Team.fromJson(dataMap)];
+    } else {
+      throw Exception('Team data is not a list or key is missing');
+    }
+  } else {
+    throw Exception('Failed to load team');
   }
 }
 
@@ -164,7 +213,6 @@ Future<int> getMyUserID() async {
     throw Exception('Failed to load user');
   }
 }
-
 
 Future<User> fetchUserMe() async {
   final token = await _getToken(); // Token'ı al
