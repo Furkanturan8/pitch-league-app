@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api.dart';
-import '../types/games.dart';
+import '../types/match.dart';
 import '../types/user.dart';
 
 class GamesScreen extends StatefulWidget {
@@ -13,7 +13,7 @@ class GamesScreen extends StatefulWidget {
 }
 
 class GamesScreenState extends State<GamesScreen> {
-  late Future<List<Games>> _gamesFuture;
+  late Future<List<Match>> _gamesFuture;
   int? _userID; // Kullanıcı ID'sini saklayacak değişken
 
   @override
@@ -40,7 +40,7 @@ class GamesScreenState extends State<GamesScreen> {
   void loadGames() {
     if (_userID != null) {
       setState(() {
-        _gamesFuture = fetchGames(_userID!); // Kullanıcı ID'si mevcutsa oyunları yükle
+        _gamesFuture = fetchMatches(_userID!); // Kullanıcı ID'si mevcutsa oyunları yükle
       });
     } else {
       setState(() {
@@ -55,7 +55,7 @@ class GamesScreenState extends State<GamesScreen> {
       appBar: AppBar(
         title: Text('Halısaha Maçları'),
       ),
-      body: FutureBuilder<List<Games>>(
+      body: FutureBuilder<List<Match>>(
         future: _gamesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -63,19 +63,23 @@ class GamesScreenState extends State<GamesScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final games = snapshot.data!;
-            if (games.isEmpty) {
+            final match = snapshot.data!;
+            if (match.isEmpty) {
               return Center(child: Text('Henüz maçınız yok'));
             }
             return ListView.builder(
-              itemCount: games.length,
+              itemCount: match.length,
               itemBuilder: (context, index) {
-                final data = games[index];
+                final data = match[index];
                 Color statusColor;
                 String statusText;
 
                 // Durum ve renklere göre eşleştirme
-                switch (data.game.status) {
+                switch (data.status) {
+                  case 'scheduled':
+                    statusColor = Colors.blue;
+                    statusText = 'Henüz başlamadı';
+                    break;
                   case 'open':
                     statusColor = Colors.blue;
                     statusText = 'Henüz başlamadı';
@@ -101,12 +105,37 @@ class GamesScreenState extends State<GamesScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Maç Detayları',
-                          style: TextStyle(
-                            fontFamily: 'CustomFont',
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${data.homeTeam.name} ',
+                                style: TextStyle(
+                                  fontFamily: 'CustomFont',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue, // Ev sahibi takım mavi
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'vs ',
+                                style: TextStyle(
+                                  fontFamily: 'CustomFont',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black, // Karşılaştırma "vs" siyah
+                                ),
+                              ),
+                              TextSpan(
+                                text: '${data.awayTeam.name}',
+                                style: TextStyle(
+                                  fontFamily: 'CustomFont',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red, // Misafir takım kırmızı
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(height: 8),
@@ -114,7 +143,7 @@ class GamesScreenState extends State<GamesScreen> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: 'Takım: ',
+                                text: 'Skor: ',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -122,8 +151,8 @@ class GamesScreenState extends State<GamesScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: data.team.name,
-                                style: TextStyle(fontSize: 14, color: Colors.black),
+                                text: '${data.homeScore} - ${data.awayScore}',
+                                style: TextStyle(fontSize: 17, color: Colors.black),
                               ),
                             ],
                           ),
@@ -236,7 +265,7 @@ class GamesScreenState extends State<GamesScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${data.team.captain.name} ${data.team.captain.surname}',
+                                text: '${data.homeTeam.captain.name} ${data.homeTeam.captain.surname}',
                                 style: TextStyle(fontSize: 15, color: Colors.black),
                               ),
                             ],
@@ -255,7 +284,7 @@ class GamesScreenState extends State<GamesScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: data.team.captain.phone,
+                                text: data.homeTeam.captain.phone,
                                 style: TextStyle(fontSize: 15, color: Colors.black),
                               ),
                             ],

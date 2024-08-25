@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../types/games.dart';
+import '../types/match.dart';
 import '../types/league.dart';
 import '../types/league_team_detail.dart';
 import '../types/team.dart';
@@ -52,9 +52,11 @@ Future<void> updateProfile(User user) async {
   }
 }
 
-Future<List<Games>> fetchGames(int userID) async {
+Future<List<Match>> fetchMatches(int userID) async {
   final token = await _getToken(); // Token'ı al
-  final response = await http.get(
+
+  // İlk olarak gameParts API'sine istek at
+  final gamePartsResponse = await http.get(
     Uri.parse('http://localhost:3002/api/gameParts/$userID'),
     headers: {
       'Authorization': 'Bearer $token',
@@ -62,23 +64,52 @@ Future<List<Games>> fetchGames(int userID) async {
     },
   );
 
-  if (response.statusCode == 200) {
-    Map<String, dynamic> jsonMap = jsonDecode(response.body);
+  if (gamePartsResponse.statusCode == 200) {
+    Map<String, dynamic> gamePartsJson = jsonDecode(gamePartsResponse.body);
 
     // 'data' anahtarının veriyi bir liste olarak içerip içermediğini kontrol et
-    if (jsonMap.containsKey('data') && jsonMap['data'] is Map<String, dynamic>) {
-      Map<String, dynamic> dataMap = jsonMap['data'];
-      // Eğer 'data' tek bir oyun nesnesiyse, bunu bir listeye ekleyin
-      return [Games.fromJson(dataMap)];
+    if (gamePartsJson.containsKey('data') && gamePartsJson['data'] is Map<String, dynamic>) {
+      Map<String, dynamic> dataMap = gamePartsJson['data'];
+
+      // gameID'yi al
+      int gameID = dataMap['GameID'];
+
+      // Şimdi matches API'sine istek at
+      final matchesResponse = await http.get(
+        Uri.parse('http://localhost:3002/api/matches/$gameID'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (matchesResponse.statusCode == 200) {
+        Map<String, dynamic> matchesJson = jsonDecode(matchesResponse.body);
+
+        // 'data' anahtarının veriyi bir liste olarak içerip içermediğini kontrol et
+        if (matchesJson.containsKey('data') && matchesJson['data'] is Map<String, dynamic>) {
+          Map<String, dynamic> matchDataMap = matchesJson['data'];
+
+          // Eğer 'data' tek bir maç nesnesiyse, bunu bir listeye ekleyin
+          return [Match.fromJson(matchDataMap)];
+        } else {
+          throw Exception('Matches data is not a list or key is missing');
+        }
+      } else if (matchesResponse.statusCode == 404) {
+        return [];
+      } else {
+        throw Exception('Error fetching matches: ${matchesResponse.statusCode}');
+      }
     } else {
-      throw Exception('Games data is not a list or key is missing');
+      throw Exception('GameParts data is not a map or key is missing');
     }
-  } else if (response.statusCode == 404) {
+  } else if (gamePartsResponse.statusCode == 404) {
     return [];
   } else {
-    throw Exception('Error fetching games: ${response.statusCode}');
+    throw Exception('Error fetching game parts: ${gamePartsResponse.statusCode}');
   }
 }
+
 
 Future<List<Team>> fetchTeams() async {
   final token = await _getToken(); // Token'ı al

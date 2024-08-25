@@ -34,6 +34,7 @@ class UpdateProfileScreenState extends State<UpdateProfileScreen> {
     _userFuture = fetchUserMe(); // API'den kullanıcıyı al
 
     _userFuture.then((user) {
+      _user = user;
       _emailController.text = user.email;
       _phoneController.text = user.phone;
       _nameController.text = user.name;
