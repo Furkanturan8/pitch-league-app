@@ -6,7 +6,7 @@ I am making our pitch-league project, whose backend I wrote in Golang, into an a
 
 I hope to continue the project. It is not fully completed yet. 
 
-What to do:
+## Todo's:
 - Users will be able to create teams (only admin can do it for now)
 - Users will be able to create matches (only admin can do it for now)
 - Users will have a certain scoring system with rating in their profile (statistics etc.)
