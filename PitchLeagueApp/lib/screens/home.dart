@@ -8,6 +8,7 @@ import 'package:pitch_league/screens/my_team.dart';
 import 'package:pitch_league/screens/update_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'chat.dart';
 import 'games.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -41,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 4:
         (context.findAncestorStateOfType<MyTeamScreenState>())?.loadMyTeam();
-
+      case 5:
+        (context.findAncestorStateOfType<ChatScreenState>())?.loadUsers();
     }
   }
 
@@ -114,7 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
           TeamsScreen(onPageSelected: () => _loadPage(1)),
           LeaguesScreen(onPageSelected: () => _loadPage(2)),
           GamesScreen(onPageSelected: () => _loadPage(3)),
-          MyTeamScreen(onPageSelected: () => _loadPage(4))
+          MyTeamScreen(onPageSelected: () => _loadPage(4)),
+          ChatScreen(onPageSelected: () => _loadPage(5))
         ],
       ),
       bottomNavigationBar: CustomMenuBar(

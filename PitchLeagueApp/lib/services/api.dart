@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pitch_league/types/message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../types/match.dart';
 import '../types/league.dart';
@@ -51,6 +52,74 @@ Future<void> updateProfile(User user) async {
     throw Exception('Profil güncellenemedi: ${response.body}');
   }
 }
+
+Future<List<ListUser>> fetchAllUsers() async {
+  final token = await _getToken(); // Token'ı al
+  final response = await http.get(
+    Uri.parse('http://localhost:3002/api/users'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+
+    // 'data' anahtarının veriyi bir liste olarak içerdiğini kontrol et
+    if (jsonMap.containsKey('data') && jsonMap['data'] is List) {
+      final List<dynamic> userDataList = jsonMap['data'] as List<dynamic>;
+
+      // Listeyi ListUser nesnelerine dönüştür
+      final List<ListUser> users = userDataList.map((userJson) {
+        return ListUser.fromJson(userJson as Map<String, dynamic>);
+      }).toList();
+
+      return users;
+    } else {
+      throw Exception('User data is not a valid JSON list or key is missing');
+    }
+  } else {
+    throw Exception('Failed to load users');
+  }
+}
+
+Future<List<Message>> fetchUserConversations() async {
+  final token = await _getToken(); // Token'ı al
+  final response = await http.get(
+    Uri.parse('http://localhost:3002/api/teams'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    },
+  );
+ throw Exception('Konuşma daveti gönderilemedi: ${response.body}');
+}
+
+Future<void> inviteUser(String from, String to) async {
+  final url = Uri.parse('http://localhost:3002/api/invite');
+  final token = await _getToken(); // Token'ı al
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token', // Gerekirse kullanıcı token'ı burada ekleyin
+    },
+    body: jsonEncode({
+      'inviter': from,
+      'invitee': to,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Başarılı güncelleme
+    print('Kullanıcıya konuşma daveti gönderildi!');
+  } else {
+    // Hata durumları
+    throw Exception('Konuşma daveti gönderilemedi: ${response.body}');
+  }
+}
+
 
 Future<List<Match>> fetchMatches(int userID) async {
   final token = await _getToken(); // Token'ı al
@@ -109,7 +178,6 @@ Future<List<Match>> fetchMatches(int userID) async {
     throw Exception('Error fetching game parts: ${gamePartsResponse.statusCode}');
   }
 }
-
 
 Future<List<Team>> fetchTeams() async {
   final token = await _getToken(); // Token'ı al

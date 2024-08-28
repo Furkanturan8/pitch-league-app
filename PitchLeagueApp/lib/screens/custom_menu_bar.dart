@@ -34,6 +34,10 @@ class CustomMenuBar extends StatelessWidget {
           icon: Icon(Icons.groups),
           label: 'Takımım',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat_outlined),
+          label: 'Chat',
+        ),
       ],
       currentIndex: selectedIndex,
       onTap: onItemTapped,
