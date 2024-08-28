@@ -84,20 +84,8 @@ Future<List<ListUser>> fetchAllUsers() async {
   }
 }
 
-Future<List<Message>> fetchUserConversations() async {
-  final token = await _getToken(); // Token'ı al
-  final response = await http.get(
-    Uri.parse('http://localhost:3002/api/teams'),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Accept': 'application/json',
-    },
-  );
- throw Exception('Konuşma daveti gönderilemedi: ${response.body}');
-}
-
 Future<void> inviteUser(String from, String to) async {
-  final url = Uri.parse('http://localhost:3002/api/invite');
+  final url = Uri.parse('http://localhost:3002/api/invite?from=$from&to=$to');
   final token = await _getToken(); // Token'ı al
   final response = await http.post(
     url,
@@ -105,10 +93,6 @@ Future<void> inviteUser(String from, String to) async {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token', // Gerekirse kullanıcı token'ı burada ekleyin
     },
-    body: jsonEncode({
-      'inviter': from,
-      'invitee': to,
-    }),
   );
 
   if (response.statusCode == 200) {
@@ -120,6 +104,55 @@ Future<void> inviteUser(String from, String to) async {
   }
 }
 
+Future<List<Message>> fetchPendingInvites() async {
+  final url = Uri.parse('http://localhost:3002/api/invites');
+  final token = await _getToken(); // Token'ı al
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token', // Kullanıcı token'ını burada ekleyin
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // Başarılı yanıt
+    final List<dynamic> inviteJson = jsonDecode(response.body);
+    return inviteJson.map((json) => Message.fromJson(json)).toList();
+  } else {
+    // Hata durumu
+    throw Exception('Davetiye bilgileri alınamadı: ${response.body}');
+  }
+}
+
+Future<void> fetchAcceptInvite(String inviteUsername) async {
+  final token = await _getToken(); // Token'ı al
+  final url = Uri.parse('http://localhost:3002/api/accept?to=$inviteUsername'); // API endpoint'inizi buraya koyun
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Başarılı ise
+      print('Davet kabul edildi.');
+    } else {
+      // Hata durumunda
+      print('Hata kodu: ${response.statusCode}');
+      print('Hata yanıtı: ${response.body}');
+      throw Exception('Davet kabul edilirken bir hata oluştu.');
+    }
+  } catch (e) {
+    print('API çağrısı sırasında hata: $e');
+    throw Exception('API çağrısı sırasında hata oluştu.');
+  }
+}
 
 Future<List<Match>> fetchMatches(int userID) async {
   final token = await _getToken(); // Token'ı al
