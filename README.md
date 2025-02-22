@@ -2,6 +2,8 @@
 
 I am making our pitch-league project, whose backend I wrote in Golang, into an app with flutter.
 
+If you want to look the backend sources, you can access from here: [pitch-league-v2](https://github.com/Furkanturan8/pitch-league-v2)
+
 ## The necessary codes are in the lib folder
 
 I hope to continue the project. It is not fully completed yet. 
